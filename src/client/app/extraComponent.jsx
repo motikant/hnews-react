@@ -1,27 +1,26 @@
-import React from 'react';
-
-class GameContainer extends React.Component {
-
-  constructor(props) {
-      super(props);
-      this.state = {likesCount : 0};
-      this.onLike = this.onLike.bind(this);
-    }
-
-  onLike () {
-      let newLikesCount = this.state.likesCount + 1;
-      this.setState({likesCount: newLikesCount});
-    }
-
-  render() {
-      return (
-	        <div>
-	          Likes : <span>{this.state.likesCount}</span>
-	          <div><button onClick={this.onLike}>Like Me</button></div>
-	        </div>
-	      );
-    }
-
+class Grab {
+	constructor(opts){
+		return new Promise(function(resolve,reject){
+			if(opts.url){
+				let xhrObj = new XMLHttpRequest(),method;
+				if(!opts.method){
+					method = 'GET';
+					opts.data = null;
+				}
+				xhrObj.open(method,opts.url);
+				xhrObj.onload = function(){
+					resolve(xhrObj.response);
+				};
+				xhrObj.onerror = function(){
+					reject({
+						status: this.status,
+						statusText: xhrObj.statusText
+					});
+				};
+				xhrObj.send(opts.data);
+			}
+		});
+	}
 }
 
-export default GameContainer
+export default Grab;

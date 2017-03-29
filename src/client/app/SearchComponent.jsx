@@ -1,33 +1,37 @@
 import React from 'react';
 
-class SearchComponent extends React.Component {
+class News extends React.Component {
     constructor(props){
         super(props);
-        this.state = {
-            searchText : '',
-            sortBy : 'score',
-            sortOrder: -1
-        };
     }
     render(){
+		let date = (new Date(this.props.post.time)).toLocaleDateString();
         return (
             <div className="row">
-                <div className="col-4">
-                    <input id="search"  type="text" placeholder="Search By Name"/>
-                </div>
-                <div className="col-4">
-                    <label htmlFor="sort">Sort By:</label>
-                    <select id="sort">
-                        <option value="-1">Highest to Lowest (Score)</option>            
-                        <option value="1">Lowest to Highest (Score)</option>
-                    </select>
-                </div>            
-                <div className="col-4">
-                    <button className="btn btn-primary">Search</button>
-                </div>
+				<div className="col-12 p-2">
+					<div><a href={this.props.post.url}>{this.props.post.title}</a></div>
+					<div>By : {this.props.post.by}</div>
+					<div>Points : {this.props.post.score}</div>
+					<div>When : {date}</div>
+				</div>
             </div>            
         );
     }
 }
 
-export default SearchComponent;
+class NewsList extends React.Component {
+	constructor(props){
+		super(props);
+	}
+	render(){
+		return (
+			<div className="row">
+				<div className="col-12">
+					{this.props.posts.map((post)=><News key={post.id} post={post}/>)}
+				</div>
+			</div>
+		);
+	}
+}
+
+export default NewsList;

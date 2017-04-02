@@ -20,30 +20,24 @@ class App extends React.Component {
 	goNext(e){
 		let self = this;
 		this.setState((prevState)=>{
-			let nextOffset = Math.min(prevState.postIds.length , prevState.offset + prevState.pageSize) , nextDisabled = '';
+			let nextOffset = Math.min(prevState.postIds.length , prevState.offset + prevState.pageSize) ;
 			if(nextOffset < prevState.postIds.length){
 				self.getNews(nextOffset,prevState.pageSize);
-			} else {
-				nextDisabled = 'disabled';
 			}
 			return{
-				offset: nextOffset,
-				nextDisabled: nextDisabled
+				offset: nextOffset
 			};
 		});
 	}
 	goPrev(e){
 		let self = this;
 		this.setState((prevState)=>{
-			let nextOffset =Math.max(0 , prevState.offset - prevState.pageSize) , prevDisabled = '';
+			let nextOffset =Math.max(0 , prevState.offset - prevState.pageSize) ;
 			if(nextOffset >= 0){
 				self.getNews(nextOffset,prevState.pageSize);
-			} else {
-				prevDisabled = 'disabled';
 			}
 			return{
-				offset: nextOffset,
-				prevDisabled: prevDisabled
+				offset: nextOffset
 			};
 		});
 	}
@@ -77,20 +71,20 @@ class App extends React.Component {
 			self.getNews(this.state.offset , this.state.pageSize);
 		});
 	}
-  render () {
-      return (
-		  <div>
-			  <p> Hacker News React! </p>
-			  <div className="row">
-				<div className="col-12">
-					<button className={"btn btn-primary m-2 "+this.state.prevDisabled} onClick={this.goPrev}>Prev</button>
-					<button className={"btn btn-primary m-2 "+this.state.nextDisabled} onClick={this.goNext}>Next</button>
+	render () {
+		return (
+			<div>
+				<p> Hacker News React! </p>
+				<div className="row">
+					<div className="col-12">
+						<button className={"btn btn-primary m-2 "+this.state.prevDisabled} onClick={this.goPrev}>Prev</button>
+						<button className={"btn btn-primary m-2 "+this.state.nextDisabled} onClick={this.goNext}>Next</button>
+					</div>
 				</div>
-			  </div>
-			  <NewsList posts={this.state.posts}/>
-		  </div>
-	  );
-    }
+				<NewsList posts={this.state.posts}/>
+			</div>
+		);
+	}
 }
 
 render(<App/>, document.getElementById('app'));

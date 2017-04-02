@@ -10,7 +10,9 @@ class App extends React.Component {
 			postIds:[],
 			posts :[],
 			offset:0,
-			pageSize:10
+			pageSize:10,
+			prevDisabled:'disabled',
+			nextDisabled:'disabled'
 		};
 		this.goNext = this.goNext.bind(this);	
 		this.goPrev = this.goPrev.bind(this);	
@@ -18,18 +20,30 @@ class App extends React.Component {
 	goNext(e){
 		let self = this;
 		this.setState((prevState)=>{
-			self.getNews(prevState.offset +prevState.pageSize,prevState.pageSize);
+			let nextOffset = Math.min(prevState.postIds.length , prevState.offset + prevState.pageSize) , nextDisabled = '';
+			if(nextOffset < prevState.postIds.length){
+				self.getNews(nextOffset,prevState.pageSize);
+			} else {
+				nextDisabled = 'disabled';
+			}
 			return{
-				offset: Math.min(prevState.postIds.length , prevState.offset + prevState.pageSize)
+				offset: nextOffset,
+				nextDisabled: nextDisabled
 			};
 		});
 	}
 	goPrev(e){
 		let self = this;
 		this.setState((prevState)=>{
-			self.getNews(prevState.offset +prevState.pageSize,prevState.pageSize);
+			let nextOffset =Math.max(0 , prevState.offset - prevState.pageSize) , prevDisabled = '';
+			if(nextOffset >= 0){
+				self.getNews(nextOffset,prevState.pageSize);
+			} else {
+				prevDisabled = 'disabled';
+			}
 			return{
-				offset: Math.max(0 , prevState.offset - prevState.pageSize)
+				offset: nextOffset,
+				prevDisabled: prevDisabled
 			};
 		});
 	}
@@ -42,8 +56,12 @@ class App extends React.Component {
 		});
 		Promise.all(allNews).then((results)=>{
 			results = results.map((a)=>JSON.parse(a));
+			let prevDisabled = self.state.offset - self.state.pageSize < 0 ? 'disabled' : '';
+			let nextDisabled = self.state.offset + self.state.pageSize >=  self.state.postIds.length ? 'disabled' : '';
 			self.setState({
-				posts:results
+				posts:results,
+				prevDisabled:prevDisabled,
+				nextDisabled:nextDisabled
 			});
 		});
 	}
@@ -65,8 +83,8 @@ class App extends React.Component {
 			  <p> Hacker News React! </p>
 			  <div className="row">
 				<div className="col-12">
-					<button className="btn btn-primary m-2" onClick={this.goPrev}>Prev</button>
-					<button className="btn btn-primary m-2" onClick={this.goNext}>Next</button>
+					<button className={"btn btn-primary m-2 "+this.state.prevDisabled} onClick={this.goPrev}>Prev</button>
+					<button className={"btn btn-primary m-2 "+this.state.nextDisabled} onClick={this.goNext}>Next</button>
 				</div>
 			  </div>
 			  <NewsList posts={this.state.posts}/>

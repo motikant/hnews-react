@@ -1,12 +1,10 @@
 import React from 'react';
 import {render} from 'react-dom';
 import Grab from './extraComponent.jsx';
+import FetchNews from './FetchNews.jsx';
 import NewsList from './SearchComponent.jsx';
 
-class App extends React.Component {
-	constructor(props){
-		super(props);
-		this.state = {
+const initialState = {
 			postIds:[],
 			posts :[],
 			offset:0,
@@ -14,31 +12,46 @@ class App extends React.Component {
 			prevDisabled:'disabled',
 			nextDisabled:'disabled'
 		};
+
+const reducer = (state = initialState,type) =>{
+	let nextOffset;
+	switch(type){
+		case 'GO_NEXT':
+			nextOffset = Math.min(state.postIds.length , state.offset + state.pageSize) ;
+			if(nextOffset < state.postIds.length){
+				self.getNews(nextOffset,state.pageSize);
+			}
+			return Object.assign({},state,{
+				offset : nextOffset
+			});
+		case 'GO_PREV':
+			nextOffset =Math.max(0 , state.offset - state.pageSize) ;
+			if(nextOffset >= 0){
+				self.getNews(nextOffset,state.pageSize);
+			}
+			return Object.assign({},state,{
+				offset : nextOffset
+			});
+		default:
+			return state;
+	}
+};
+
+class App extends React.Component {
+	constructor(props){
+		super(props);
+		this.state = reducer();
 		this.goNext = this.goNext.bind(this);	
 		this.goPrev = this.goPrev.bind(this);	
 	}
 	goNext(e){
-		let self = this;
 		this.setState((prevState)=>{
-			let nextOffset = Math.min(prevState.postIds.length , prevState.offset + prevState.pageSize) ;
-			if(nextOffset < prevState.postIds.length){
-				self.getNews(nextOffset,prevState.pageSize);
-			}
-			return{
-				offset: nextOffset
-			};
+			return reducer(prevState,'GO_NEXT');
 		});
 	}
 	goPrev(e){
-		let self = this;
 		this.setState((prevState)=>{
-			let nextOffset =Math.max(0 , prevState.offset - prevState.pageSize) ;
-			if(nextOffset >= 0){
-				self.getNews(nextOffset,prevState.pageSize);
-			}
-			return{
-				offset: nextOffset
-			};
+			return reducer(prevState,'GO_PREV');
 		});
 	}
 	getNews(start,size){
